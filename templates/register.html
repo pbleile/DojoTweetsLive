@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+
+    <!-- jQueryUI -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='register.css')}}">
+    <style>
+        {# This section defaults the displayed form to be login, unless there was an unsuccessful registration #}
+        {% if get_flashed_messages(category_filter=["registration"]) %}
+        #login{
+            display:none;
+        }
+        {% else %}
+        #register{
+            display:none;
+        }
+        {% endif %}
+    </style>
+
+    
+    
+    <script>
+        $(document).ready(function(){
+            // This section handles switching between login and registration forms //
+            $("#register-btn").click(function(){
+                console.log("reg-form button click");
+                $("#login").hide("slide",{direction: "right"},afterLoginHide);
+            });
+            $("#login-btn").click(function(){
+                console.log("reg-form button click");
+                $("#register").hide("slide",afterRegisterHide);
+            });
+            function afterRegisterHide(){
+                $("#login").show("slide",{direction: "right"});
+            }
+            function afterLoginHide(){
+                $("#register").show("slide");
+            }
+
+            // Ajax calls for form validation
+            $('#email').keyup(function(){
+                var data=$('#email').serialize()
+                console.log(data)
+                $.ajax({method:'POST',url:'/check_email',data:data})
+                .done(function(res){
+                    $("#emailMsg").html(res)
+                });
+            });
+            $('#register_form').submit(function(){
+                var data=$(this).serialize()
+                $.ajax({
+                    method:$(this).attr('method'),
+                    url: $(this).attr('action'),
+                    data: data
+                })
+                .done(function(res){
+                    if (res=="/success"){
+                        window.location.replace(res);
+                    } else {
+                        $('#name_error').html('');
+                        $('#password_error').html('');
+                        $('#password_match_error').html('');
+                        $('#emailMsg').html('');
+                        res=JSON.parse(res);
+                        {#console.log(Object(res));
+                        console.log(res[0].name_error);
+                        console.log(res.length);
+                        console.log(res.name_error);
+                        console.log($('#'+res[0].type));
+                        e_div=$('#'+res[0].type);
+                        e_msg="<p class='text-danger'>"+res[0].message+"</p>";
+                        console.log(e_msg);
+                        e_div.html(e_msg);#}
+                        
+                        for(var i=0;i<res.length;i++){
+                            e_div=$('#'+res[i].type);
+                            e_msg="<p class='text-danger'>"+res[i].message+"</p>";
+                            console.log(e_msg);
+                            console.log(e_div);
+                            e_div.html(e_msg);
+                            
+                            {# if(res[i].type=='name_error'){
+                                $('#'+res[i].type).html("<p>"+res[i].message+</p>)
+                            } else if(res[i].type=='name_error'){
+                            
+                            } else if(res[i].type=='password_error'){
+
+                            }else if(res[i].type=='password_match_error'){
+
+                            }else if(res[i].type=='email_error'){
+
+                            } #}
+                        }
+                       {#  window.location.replace('/');
+                       keys=Object.keys(res[0]);#}
+                    }
+                });
+                return false;
+            });
+            $('#login_form').submit(function(){
+                $.ajax({
+                    method:$(this).attr('method'),
+                    url: $(this).attr('action'),
+                    data: $(this).serialize()
+                })
+                .done(function(res){
+                    console.log(res)
+                    if (res=="fail"){
+                        $("#login_error").removeAttr('hidden');
+                    } else{
+                        window.location.replace(res);
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+    <title>Dojo Tweets Login</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Dojo Tweets!</h1>
+        <div id="register">
+            <form id="register_form" action="/register" method="POST">
+                <legend>Registration</legend>
+                <fieldset>
+                    {% with messages = get_flashed_messages(category_filter=["registration"]) %}     <!-- declare a variable called messages -->
+                        {% if messages %}                            <!-- check if there are any messages -->
+                            {% for message in messages %}            <!-- loop through the messages -->
+                                <p class="text-danger">{{message}}</p>                   <!-- display each message in a paragraph tag -->
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <div id="name_error"></div>
+                    <label for="fname">First Name: </label>
+                    <input type="text" name="first_name" id="fname">
+                </fieldset>
+                <fieldset>
+                    <label for="lname">Last Name: </label>
+                    <input type="text" name="last_name" id="lname">
+                </fieldset>
+                <fieldset>
+                    <div id="emailMsg"></div>
+                    <label for="email">Email: </label>
+                    <input type="email" name="email_address" id="email">
+                </fieldset>
+                <fieldset>
+                        <div id="password_error"></div>
+                    <label for="pwd">Password:</label>
+                    <input type="password" name="password" id="pwd">
+                </fieldset>
+                <fieldset>
+                    <div id="password_match_error"></div>
+                    <label for="conf_pwd">Confirm Password:</label>
+                    <input type="password" name="confirm_password" id="conf_pwd">
+                </fieldset>
+                <input class="btn shadow" type="submit" value="Register">
+                Or <a id="login-btn" href="#login">Login</a> if you already have an account.
+            </form>
+        </div>
+        <div id="login">
+            <form id="login_form" action="/login" method="POST">
+                <legend>Login</legend>
+                    {% with messages = get_flashed_messages(category_filter=["login"]) %}     <!-- declare a variable called messages -->
+                        {% if messages %}                            <!-- check if there are any messages -->
+                            {% for message in messages %}            <!-- loop through the messages -->
+                                <p class="text-danger">{{message}}</p>                   <!-- display each message in a paragraph tag -->
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <p id="login_error" hidden class="text-danger">"Login failed: email or password is incorrect"</p>
+                <fieldset>
+                    <label for="lemail">Email: </label>
+                    <input type="email" name="email_address" id="lemail">
+                </fieldset>
+                <fieldset>
+                    <label for="lpwd">Password:</label>
+                    <input type="password" name="password" id="lpwd">
+                </fieldset>
+                <input class="btn shadow" type="submit" value="Login">
+                Or <a id="register-btn" href="#register">Register</a> if you need an account.
+            </form>
+        </div>
+    </div>
+</body>
+</html>

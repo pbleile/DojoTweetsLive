@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Followers</title>
+</head>
+<body>
+    <div class="m-3">
+        <div>
+            <h1 class="d-inline-block mr-5">Dojo Tweets</h1>
+            <h2 class="d-inline-block mr-5 align-baseline">Welcome, {{session['user_name']}}</h2>
+            <div class="d-inline-block">
+                <a class="btn btn-light shadow ml-5 align-baseline" href="/users">Users</a>
+                <a class="btn btn-light shadow align-baseline" href="/dashboard">Dashboard</a>
+                <a class="ml-2 align-baseline" href="/logout">Logout</a>
+            </div>
+        </div>
+        <hr>
+        <h1>Your Followers</h1>
+        {% set follower_count=followers|length %}
+        <h4>You have {{follower_count}} followers:</h4>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for afollower in followers %}
+                    <tr>
+                        <td>{{afollower.follower.first_name}} {{afollower.follower.last_name}}</td>
+                        <td>{{afollower.follower.email}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

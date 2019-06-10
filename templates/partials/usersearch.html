@@ -1,0 +1,13 @@
+{% for user in users %}
+    {% if user['id']!=session['MyWebsite_user_id'] %}
+        <tr>
+            <td>{{user['first_name']}} {{user['last_name']}}</td> 
+            <td>{{user['email']}}</td>
+            {% if user['id'] not in following %}
+            <td><a href="/users/follow/{{user['id']}}">Follow</a></td>
+            {% else %}
+            <td><a href="/users/unfollow/{{user['id']}}">Unfollow</a></td>
+            {% endif %}
+        </tr>
+    {% endif %}
+{% endfor %}

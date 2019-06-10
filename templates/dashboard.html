@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        $(function(){
+            {# Continuous web page #}
+            $(window).scroll(function() {
+                if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
+                    {# console.log("at bottom");
+                    data='tweet_count='+{{tweets|length}} 
+                    console.log(data); #}
+                    $.ajax({
+                        method:"POST",
+                        url:"/getmoretweets",
+                        {# data:data #}
+                    })
+                    .done(function(new_tweets){
+                        
+                        $('#the_feed').append(new_tweets);
+                    });
+                }
+            });
+            {# make like and delete dynamic instead of refresh #}
+            {# $('.like_del_edit').submit(function(){ #}
+            $('#the_feed').on( "click",".like_delete_btn", function(){
+                console.log("like_del_edit submit")
+                {#btn=$(this).find('.like_delete_btn').attr("value")#}
+                btn=$(this).attr("value")
+                frm=this
+                prt=$(this).parent()
+                console.log("this:")
+                console.log(this)
+                console.log("frm:")
+                console.log(frm)
+                console.log(btn)
+                $.ajax({
+                    method:$(prt).attr('method'),
+                    url:$(prt).attr('action'),
+                    data:$(prt).serialize()
+                })
+                .done(function(resp){
+                    console.log("this:")
+                    console.log(this)
+                    if (btn=='Like'){
+                        console.log('update Liked')
+                        $(prt).find('.badge').text(resp)
+                    } else if (btn=='Delete') {
+                        console.log("delete tweet")
+                        $(prt).parent().remove()
+                    }
+                });
+                return false;
+            });
+
+            {# check for new tweets and display new ones #}
+            checkTimer=window.setInterval(pollForTweets,10000);
+            function pollForTweets(){
+                id=$("#the_feed :nth-child(3)").attr('tweet_id');
+                el=$('.a_tweet[tweet_id='+id+']')
+                {# console.log("check tweets");
+                console.log(id); 
+                console.log(el); #}
+                $.ajax({
+                    method:'POST',
+                    url:'/poll_new_tweets',
+                    data:''
+                })
+                .done(function(new_tweets){
+                    if (new_tweets!=''){
+                        {#console.log(new_tweets);#}
+                        $(el).prepend(new_tweets);
+                    }
+                });
+            }
+        });
+
+    </script>
+    <title>User Dashboard</title>
+</head>
+<body>
+    <div class="m-3">
+        <div>
+            <h1 class="d-inline-block mr-5">Dojo Tweets</h1>
+            <h2 class="d-inline-block mr-5 align-baseline">Welcome, {{session['user_name']}}</h2>
+            <div class="d-inline-block">
+                <a class="btn btn-light shadow ml-5 align-baseline" href="/users">Users</a>
+                <a class="btn btn-light shadow align-baseline" href="/followers">Followers</a>
+                <a class="ml-2 align-baseline" href="/logout">Logout</a>
+            </div>
+        </div>
+        <hr>
+        <div class="mb-4">
+            {% with messages = get_flashed_messages() %}     <!-- declare a variable called messages -->
+                {% if messages %}                            <!-- check if there are any messages -->
+                    {% for message in messages %}            <!-- loop through the messages -->
+                        <p class="text-danger">{{message}}</p>                   <!-- display each message in a paragraph tag -->
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <form action="/tweets/create" method="POST">
+                <legend>Write a Tweet:</legend>
+                <fieldset>
+                    <textarea class="form-control" name="newtweet" id="newtweet" rows="5" placeholder="Your tweet here..."></textarea>
+                </fieldset>
+                <input class="btn shadow mt-3" type="submit" value="Submit">
+            </form>
+        </div>
+        <div id="the_feed">
+            <h3>Your Feed:</h3>
+            <p>Following {{follow_count}} users</p>
+            {% for tweet in tweets %}
+            <div class="a_tweet mb-3" tweet_id={{tweet.id}}>
+                <p>
+                    <span class="font-weight-bold">{{tweet.user.first_name}} {{tweet.user['last_name']}} says</span> ({{tweet.created_at.strftime('%c')}})<span class="font-weight-bold">:</span><br>
+                    <span  class="ml-4">{{tweet['message']}}</span>
+                </p>
+                {% set form_action=("delete" if tweet['user_id']==session['MyWebsite_user_id'] else "add_like") %}
+                {% set tweet_id=tweet['id']|string %}
+                {% set form_action="/tweets/"+tweet_id+"/"+ form_action %}
+                <form class="like_del_edit ml-4" action={{ form_action }} method="POST">
+                    Likes: <span class="badge">{{ tweet.liked_by|length }}</span>
+                    {# use AJAX #}
+                    {% set btn_label="Delete" if tweet['user_id']==session['MyWebsite_user_id'] else "Like" %}
+                    <input name="like_delete_btn" class="like_delete_btn btn shadow" type="submit" value={{btn_label}}> 
+                    {% if tweet['user_id']==session['MyWebsite_user_id'] %}
+                    <a href="/tweets/{{tweet['id']|string}}/edit" class="btn shadow">Edit</a>
+                    {% endif %}
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

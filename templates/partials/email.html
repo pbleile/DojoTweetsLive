@@ -1,0 +1,8 @@
+{% if is_valid==True %}
+{% if found == True %}
+<p class="text-danger">email has been taken.</p>
+{% endif %}
+{% if found == False %}
+<p class="text-success"> This email is available</p>
+{% endif %}
+{% endif %}

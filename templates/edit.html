@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Edit Tweet</title>
+</head>
+<body>
+    <div class="m-3">
+        <div>
+            <h1 class="d-inline-block mr-5">Dojo Tweets</h1>
+            <h2 class="d-inline-block mr-5 align-baseline">Welcome, {{session['user_name']}}</h2>
+            <a href="/logout">Logout</a>
+        </div>
+        <hr>
+        <div>
+            {% with messages = get_flashed_messages() %}     <!-- declare a variable called messages -->
+                {% if messages %}                            <!-- check if there are any messages -->
+                    {% for message in messages %}            <!-- loop through the messages -->
+                        <p>{{message}}</p>                   <!-- display each message in a paragraph tag -->
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <form action="/tweets/{{tweet['id']}}/update" method="POST">
+                <legend>Edit Tweet:</legend>
+                <fieldset>
+                    <textarea class="form-control" name="edit_tweet" id="edit_tweet"  rows="5" placeholder="Your tweet here...">{{tweet['message']}}</textarea>
+                </fieldset>
+                <input class="btn shadow mt-3" type="submit" value="Submit">
+                <a class="btn shadow mt-3" href="/dashboard">Cancel</a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

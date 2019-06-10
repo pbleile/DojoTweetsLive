@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <title>Users</title>
+    <script>
+        $(function(){
+            $('#namesearch').keyup(function(){
+                data=$(this).val();
+                console.log(data);
+                $.ajax({
+                    method: 'POST',
+                    url: 'users',
+                    data: 'search_string='+data
+                }).done(function(res){
+                    $('#user_table_body').html(res);
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="m-3">
+        <div>
+            <h1 class="d-inline-block mr-5">Dojo Tweets</h1>
+            <h2 class="d-inline-block mr-5 align-baseline">Welcome, {{session['user_name']}}</h2>
+            <div class="d-inline-block">
+            <div>
+                <a class="btn btn-light ml-5 shadow align-baseline" href="/followers">Followers</a>
+                <a class="btn btn-light shadow align-baseline" href="/dashboard">Dashboard</a>
+                <a class="ml-2 align-baseline" href="/logout">Logout</a>
+            </div>
+        </div>
+        <hr>
+        <h4>Choose which users you would like to follow:</h4>
+        <label for="namesearch">Start typing a name to narrow the results</label>
+        <input id="namesearch" type="text" name="namesearch">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                </tr>
+            </th>
+            <tbody id="user_table_body">
+                {% for user in users %}
+                    {% if user['id']!=session['MyWebsite_user_id'] %}
+                        <tr>
+                            <td>{{user['first_name']}} {{user['last_name']}}</td> 
+                            <td>{{user['email']}}</td>
+                            {% if user['id'] not in following %}
+                            <td><a href="/users/follow/{{user['id']}}">Follow</a></td>
+                            {% else %}
+                            <td><a href="/users/unfollow/{{user['id']}}">Unfollow</a></td>
+                            {% endif %}
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
