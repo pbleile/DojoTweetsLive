@@ -118,6 +118,7 @@
                 .done(function(res){
                     console.log(res)
                     if (res=="fail"){
+                        $("#login").effect("shake");
                         $("#login_error").removeAttr('hidden');
                     } else{
                         window.location.replace(res);
