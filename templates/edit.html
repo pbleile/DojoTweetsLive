@@ -24,8 +24,8 @@
                 {% endif %}
             {% endwith %}
             <form action="/tweets/{{tweet['id']}}/update" method="POST">
-                <legend>Edit Tweet:</legend>
                 <fieldset>
+                    <legend>Edit Tweet:</legend>
                     <textarea class="form-control" name="edit_tweet" id="edit_tweet"  rows="5" placeholder="Your tweet here...">{{tweet['message']}}</textarea>
                 </fieldset>
                 <input class="btn shadow mt-3" type="submit" value="Submit">

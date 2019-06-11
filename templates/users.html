@@ -29,7 +29,6 @@
             <h1 class="d-inline-block mr-5">Dojo Tweets</h1>
             <h2 class="d-inline-block mr-5 align-baseline">Welcome, {{session['user_name']}}</h2>
             <div class="d-inline-block">
-            <div>
                 <a class="btn btn-light ml-5 shadow align-baseline" href="/followers">Followers</a>
                 <a class="btn btn-light shadow align-baseline" href="/dashboard">Dashboard</a>
                 <a class="ml-2 align-baseline" href="/logout">Logout</a>
@@ -46,7 +45,7 @@
                     <th>Email</th>
                     <th>Action</th>
                 </tr>
-            </th>
+            </thead>
             <tbody id="user_table_body">
                 {% for user in users %}
                     {% if user['id']!=session['MyWebsite_user_id'] %}

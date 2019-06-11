@@ -103,8 +103,8 @@
                 {% endif %}
             {% endwith %}
             <form action="/tweets/create" method="POST">
-                <legend>Write a Tweet:</legend>
                 <fieldset>
+                    <legend>Write a Tweet:</legend>
                     <textarea class="form-control" name="newtweet" id="newtweet" rows="5" placeholder="Your tweet here..."></textarea>
                 </fieldset>
                 <input class="btn shadow mt-3" type="submit" value="Submit">
@@ -114,7 +114,7 @@
             <h3>Your Feed:</h3>
             <p>Following {{follow_count}} users</p>
             {% for tweet in tweets %}
-            <div class="a_tweet mb-3" tweet_id={{tweet.id}}>
+            <div class="a_tweet mb-3" tweet_id="{{tweet.id}}">
                 <p>
                     <span class="font-weight-bold">{{tweet.user.first_name}} {{tweet.user['last_name']}} says</span> ({{tweet.created_at.strftime('%c')}})<span class="font-weight-bold">:</span><br>
                     <span  class="ml-4">{{tweet['message']}}</span>

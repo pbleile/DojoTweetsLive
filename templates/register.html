@@ -134,16 +134,16 @@
     <div class="container">
         <h1>Welcome to Dojo Tweets!</h1>
         <div id="register">
+            <h4>Registration</h4>
             <form id="register_form" action="/register" method="POST">
-                <legend>Registration</legend>
+                {% with messages = get_flashed_messages(category_filter=["registration"]) %}     <!-- declare a variable called messages -->
+                    {% if messages %}                            <!-- check if there are any messages -->
+                        {% for message in messages %}            <!-- loop through the messages -->
+                            <p class="text-danger">{{message}}</p>                   <!-- display each message in a paragraph tag -->
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 <fieldset>
-                    {% with messages = get_flashed_messages(category_filter=["registration"]) %}     <!-- declare a variable called messages -->
-                        {% if messages %}                            <!-- check if there are any messages -->
-                            {% for message in messages %}            <!-- loop through the messages -->
-                                <p class="text-danger">{{message}}</p>                   <!-- display each message in a paragraph tag -->
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
                     <div id="name_error"></div>
                     <label for="fname">First Name: </label>
                     <input type="text" name="first_name" id="fname">
@@ -158,7 +158,7 @@
                     <input type="email" name="email_address" id="email">
                 </fieldset>
                 <fieldset>
-                        <div id="password_error"></div>
+                    <div id="password_error"></div>
                     <label for="pwd">Password:</label>
                     <input type="password" name="password" id="pwd">
                 </fieldset>
@@ -172,16 +172,16 @@
             </form>
         </div>
         <div id="login">
+            <h4>Login</h4>
             <form id="login_form" action="/login" method="POST">
-                <legend>Login</legend>
-                    {% with messages = get_flashed_messages(category_filter=["login"]) %}     <!-- declare a variable called messages -->
-                        {% if messages %}                            <!-- check if there are any messages -->
-                            {% for message in messages %}            <!-- loop through the messages -->
-                                <p class="text-danger">{{message}}</p>                   <!-- display each message in a paragraph tag -->
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-                    <p id="login_error" hidden class="text-danger">"Login failed: email or password is incorrect"</p>
+                {% with messages = get_flashed_messages(category_filter=["login"]) %}     <!-- declare a variable called messages -->
+                {% if messages %}                            <!-- check if there are any messages -->
+                {% for message in messages %}            <!-- loop through the messages -->
+                <p class="text-danger">{{message}}</p>                   <!-- display each message in a paragraph tag -->
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+                <p id="login_error" hidden class="text-danger">"Login failed: email or password is incorrect"</p>
                 <fieldset>
                     <label for="lemail">Email: </label>
                     <input type="email" name="email_address" id="lemail">
