@@ -9,9 +9,10 @@
     <title>Users</title>
     <script>
         $(function(){
+            // Autocomplete user name search
             $('#namesearch').keyup(function(){
                 data=$(this).val();
-                console.log(data);
+                // console.log(data);
                 $.ajax({
                     method: 'POST',
                     url: 'users',

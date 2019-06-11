@@ -8,16 +8,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
         $(function(){
-            {# Continuous web page #}
+            // Continuous web page update
             $(window).scroll(function() {
                 if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
-                    {# console.log("at bottom");
-                    data='tweet_count='+{{tweets|length}} 
-                    console.log(data); #}
+                    // console.log("at bottom");
                     $.ajax({
                         method:"POST",
                         url:"/getmoretweets",
-                        {# data:data #}
                     })
                     .done(function(new_tweets){
                         
@@ -25,46 +22,41 @@
                     });
                 }
             });
-            {# make like and delete dynamic instead of refresh #}
-            {# $('.like_del_edit').submit(function(){ #}
+
+            // Make like and delete AJAX dynamic instead of refresh
             $('#the_feed').on( "click",".like_delete_btn", function(){
-                console.log("like_del_edit submit")
-                {#btn=$(this).find('.like_delete_btn').attr("value")#}
+                // console.log("like_del_edit submit")
+                // determine if the button is a like or a delete
                 btn=$(this).attr("value")
-                frm=this
+                // frm=this
+                // save parent of this for the callback
                 prt=$(this).parent()
-                console.log("this:")
-                console.log(this)
-                console.log("frm:")
-                console.log(frm)
-                console.log(btn)
                 $.ajax({
                     method:$(prt).attr('method'),
                     url:$(prt).attr('action'),
                     data:$(prt).serialize()
                 })
                 .done(function(resp){
-                    console.log("this:")
-                    console.log(this)
                     if (btn=='Like'){
-                        console.log('update Liked')
+                        // console.log('update Liked')
                         $(prt).find('.badge').text(resp)
                     } else if (btn=='Delete') {
-                        console.log("delete tweet")
+                        // console.log("delete tweet")
                         $(prt).parent().remove()
                     }
                 });
+                // Stop the default submit of the form
                 return false;
             });
 
-            {# check for new tweets and display new ones #}
+            // Check for new tweets and display new ones
             checkTimer=window.setInterval(pollForTweets,10000);
             function pollForTweets(){
-                id=$("#the_feed :nth-child(3)").attr('tweet_id');
-                el=$('.a_tweet[tweet_id='+id+']')
-                {# console.log("check tweets");
-                console.log(id); 
-                console.log(el); #}
+                id=$("#the_feed :nth-child(3)").attr('data-tweet_id');
+                el=$('.a_tweet[data-tweet_id='+id+']')
+                // console.log("check tweets");
+                // console.log(id); 
+                // console.log(el); 
                 $.ajax({
                     method:'POST',
                     url:'/poll_new_tweets',
@@ -72,7 +64,7 @@
                 })
                 .done(function(new_tweets){
                     if (new_tweets!=''){
-                        {#console.log(new_tweets);#}
+                        //console.log(new_tweets);
                         $(el).prepend(new_tweets);
                     }
                 });
@@ -114,17 +106,16 @@
             <h3>Your Feed:</h3>
             <p>Following {{follow_count}} users</p>
             {% for tweet in tweets %}
-            <div class="a_tweet mb-3" tweet_id="{{tweet.id}}">
+            <div class="a_tweet mb-3" data-tweet_id="{{tweet.id}}">
                 <p>
                     <span class="font-weight-bold">{{tweet.user.first_name}} {{tweet.user['last_name']}} says</span> ({{tweet.created_at.strftime('%c')}})<span class="font-weight-bold">:</span><br>
                     <span  class="ml-4">{{tweet['message']}}</span>
                 </p>
                 {% set form_action=("delete" if tweet['user_id']==session['MyWebsite_user_id'] else "add_like") %}
-                {% set tweet_id=tweet['id']|string %}
-                {% set form_action="/tweets/"+tweet_id+"/"+ form_action %}
+                {% set form_action="/tweets/"+tweet['id']|string+"/"+ form_action %}
                 <form class="like_del_edit ml-4" action={{ form_action }} method="POST">
                     Likes: <span class="badge">{{ tweet.liked_by|length }}</span>
-                    {# use AJAX #}
+                    {# uses AJAX #}
                     {% set btn_label="Delete" if tweet['user_id']==session['MyWebsite_user_id'] else "Like" %}
                     <input name="like_delete_btn" class="like_delete_btn btn shadow" type="submit" value={{btn_label}}> 
                     {% if tweet['user_id']==session['MyWebsite_user_id'] %}

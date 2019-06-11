@@ -1,12 +1,11 @@
 {% for tweet in tweets %}
-<div class="a_tweet mb-3" tweet_id={{tweet.id}}>
+<div class="a_tweet mb-3" data-tweet_id={{tweet.id}}>
     <p>
         <span class="font-weight-bold">{{tweet.user.first_name}} {{tweet.user['last_name']}} says</span> ({{tweet.created_at.strftime('%c')}})<span class="font-weight-bold">:</span><br>
         <span  class="ml-4">{{tweet['message']}}</span>
     </p>
     {% set form_action=("delete" if tweet['user_id']==session['MyWebsite_user_id'] else "add_like") %}
-    {% set tweet_id=tweet['id']|string %}
-    {% set form_action="/tweets/"+tweet_id+"/"+ form_action %}
+    {% set form_action="/tweets/"+tweet['id']|string+"/"+ form_action %}
     <form class="like_del_edit ml-4" action={{ form_action }} method="POST">
         Likes: <span class="badge">{{ tweet.liked_by|length }}</span>
         {% set btn_label="Delete" if tweet['user_id']==session['MyWebsite_user_id'] else "Like" %}
